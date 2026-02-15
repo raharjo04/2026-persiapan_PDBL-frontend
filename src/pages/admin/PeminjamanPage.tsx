@@ -1,164 +1,82 @@
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePeminjaman } from "../../hooks/admin/usePeminjaman";
 import { peminjamanApi } from "../../api/peminjamanApi";
-import { ruanganService } from "../../api/ruanganApi";
-import type { Peminjaman } from "../../types/peminjaman";
-import type { Ruangan } from "../../types/ruangan";
 
+import Navbar from "../../components/layout/admin/Navbar";
 import PeminjamanForm from "../../components/peminjaman/PeminjamanForm";
-import PeminjamanTable from "../../components/peminjaman/PeminjamanTable";
-import PeminjamanDetailModal from "../../components/peminjaman/PeminjamanDetailModal";
 
 export default function PeminjamanPage() {
-  const [activeTab, setActiveTab] = useState<"form" | "riwayat">("form");
-  const [listPeminjaman, setListPeminjaman] = useState<Peminjaman[]>([]);
-  const [listRuangan, setListRuangan] = useState<Ruangan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-  const [selectedDetail, setSelectedDetail] = useState<any | null>(null);
-
-  const [formData, setFormData] = useState({
-    namaPeminjam: "",
-    ruanganId: "",
-    tanggalPinjam: "",
-    keperluan: "",
-    status: "Menunggu",
-  });
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [resPinjam, resRuang] = await Promise.all([
-        peminjamanApi.getAll(),
-        ruanganService.getAll(),
-      ]);
-      setListPeminjaman(resPinjam);
-      setListRuangan(resRuang);
-    } catch (error) {
-      console.error("Error sync data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const {
+    listRuangan,
+    loading,
+    submitting,
+    setSubmitting,
+    formData,
+    setFormData,
+    resetForm,
+  } = usePeminjaman();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const payload = { ...formData, ruanganId: Number(formData.ruanganId) };
 
-      if (isEditing && editId) {
-        await peminjamanApi.update(editId, payload as any);
-        alert("Data berhasil diupdate!");
-      } else {
-        await peminjamanApi.create(payload as any);
-        alert("Permohonan berhasil dikirim!");
-      }
+    try {
+      setSubmitting(true);
+
+      const payload = {
+        ...formData,
+        ruanganId: Number(formData.ruanganId),
+      };
+
+      await peminjamanApi.create(payload as any);
+
+      alert("Permohonan berhasil dibuat!");
 
       resetForm();
-      fetchData();
-      setActiveTab("riwayat");
+
+      // 🔥 Redirect ke daftar admin
+      navigate("/admin/daftar-peminjam");
     } catch {
-      alert("Gagal memproses data!");
+      alert("Terjadi kesalahan saat menyimpan data.");
+    } finally {
+      setSubmitting(false);
     }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Yakin ingin menghapus data ini?")) {
-      await peminjamanApi.delete(id);
-      fetchData();
-    }
-  };
-
-  const startEdit = (p: any) => {
-    setIsEditing(true);
-    setEditId(p.id || p.Id);
-    setFormData({
-      namaPeminjam: p.namaPeminjam || p.NamaPeminjam,
-      ruanganId: String(p.ruanganId || p.RuanganId),
-      tanggalPinjam: (p.tanggalPinjam || p.TanggalPinjam)?.split("T")[0],
-      keperluan: p.keperluan || p.Keperluan,
-      status: p.status || p.Status,
-    });
-    setActiveTab("form");
-  };
-
-  const resetForm = () => {
-    setFormData({
-      namaPeminjam: "",
-      ruanganId: "",
-      tanggalPinjam: "",
-      keperluan: "",
-      status: "Menunggu",
-    });
-    setIsEditing(false);
-    setEditId(null);
   };
 
   if (loading)
-    return <div className="text-center p-10">Memuat data...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 text-slate-400">
+        Loading Form...
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 font-sans">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Peminjaman Lab
-        </h2>
+    <div className="min-h-screen bg-slate-50 font-sans">
+      <Navbar />
 
-        {/* Tabs */}
-        <div className="flex gap-4 border-b mb-6">
-          <button
-            className={`pb-2 font-semibold ${
-              activeTab === "form"
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-500"
-            }`}
-            onClick={() => {
-              setActiveTab("form");
-              if (!isEditing) resetForm();
-            }}
-          >
-            {isEditing ? "Edit Data" : "Form Pengajuan"}
-          </button>
+      <main className="max-w-3xl mx-auto py-12 px-4">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-extrabold text-slate-800">
+            Pengajuan Baru
+          </h1>
 
-          <button
-            className={`pb-2 font-semibold ${
-              activeTab === "riwayat"
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab("riwayat")}
-          >
-            Daftar Pinjaman
-          </button>
+          <p className="text-slate-500 mt-2">
+            Pastikan semua data yang diinput sudah benar.
+          </p>
         </div>
 
-        {activeTab === "form" ? (
+        <div className="bg-white rounded-3xl shadow-sm border p-8">
           <PeminjamanForm
             formData={formData}
             listRuangan={listRuangan}
-            isEditing={isEditing}
+            isEditing={false}
             onChange={setFormData}
             onSubmit={handleSubmit}
+            submitting={submitting}
           />
-        ) : (
-          <PeminjamanTable
-            data={listPeminjaman}
-            onDetail={setSelectedDetail}
-            onEdit={startEdit}
-            onDelete={handleDelete}
-          />
-        )}
-      </div>
-
-      <PeminjamanDetailModal
-        data={selectedDetail}
-        onClose={() => setSelectedDetail(null)}
-      />
+        </div>
+      </main>
     </div>
   );
 }

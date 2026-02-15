@@ -1,10 +1,10 @@
-import api from './api'; 
-import type { Peminjaman } from '../types/peminjaman';
+import api from "./api";
+import type { Peminjaman } from "../types/peminjaman";
 
 export const peminjamanApi = {
   // View the loan list
   getAll: async (): Promise<Peminjaman[]> => {
-    const response = await api.get<Peminjaman[]>('/peminjaman');
+    const response = await api.get<Peminjaman[]>("/peminjaman");
     return response.data;
   },
 
@@ -14,9 +14,9 @@ export const peminjamanApi = {
     return response.data;
   },
 
-  // Create 
+  // Create
   create: async (data: Peminjaman): Promise<Peminjaman> => {
-    const response = await api.post<Peminjaman>('/peminjaman', data);
+    const response = await api.post<Peminjaman>("/peminjaman", data);
     return response.data;
   },
 
@@ -30,5 +30,13 @@ export const peminjamanApi = {
   // Delete
   delete: async (id: number): Promise<void> => {
     await api.delete(`/peminjaman/${id}`);
-  }
+  },
+
+  //Update Status
+  updateStatus: async (id: number, status: string): Promise<Peminjaman> => {
+    const response = await api.patch<Peminjaman>(`/peminjaman/${id}/status`, {
+      status,
+    });
+    return response.data;
+  },
 };

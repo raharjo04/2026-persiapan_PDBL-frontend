@@ -1,11 +1,10 @@
-import type { Ruangan } from "../../types/ruangan";
-
 type Props = {
   formData: any;
-  listRuangan: Ruangan[];
+  listRuangan: any[];
   isEditing: boolean;
   onChange: (data: any) => void;
   onSubmit: (e: React.FormEvent) => void;
+  submitting: boolean;
 };
 
 export default function PeminjamanForm({
@@ -14,15 +13,13 @@ export default function PeminjamanForm({
   isEditing,
   onChange,
   onSubmit,
+  submitting,
 }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-
       {/* Nama */}
       <div>
-        <label className="font-semibold block mb-1">
-          Nama Peminjam
-        </label>
+        <label className="font-semibold block mb-1">Nama Peminjam</label>
         <input
           className="w-full border rounded-lg px-3 py-2"
           value={formData.namaPeminjam}
@@ -35,15 +32,12 @@ export default function PeminjamanForm({
 
       {/* Ruangan */}
       <div>
-        <label className="font-semibold block mb-1">
-          Ruangan Lab
-        </label>
+        <label className="font-semibold block mb-1">Ruangan Lab</label>
+
         <select
           className="w-full border rounded-lg px-3 py-2"
           value={formData.ruanganId}
-          onChange={(e) =>
-            onChange({ ...formData, ruanganId: e.target.value })
-          }
+          onChange={(e) => onChange({ ...formData, ruanganId: e.target.value })}
           required
         >
           <option value="">-- Pilih Ruangan --</option>
@@ -58,13 +52,17 @@ export default function PeminjamanForm({
 
       {/* Tanggal */}
       <div>
-        <label className="font-semibold block mb-1">Tanggal</label>
+        <label className="font-semibold block mb-1">Tanggal Pinjam</label>
+
         <input
           type="date"
           className="w-full border rounded-lg px-3 py-2"
           value={formData.tanggalPinjam}
           onChange={(e) =>
-            onChange({ ...formData, tanggalPinjam: e.target.value })
+            onChange({
+              ...formData,
+              tanggalPinjam: e.target.value,
+            })
           }
           required
         />
@@ -72,24 +70,50 @@ export default function PeminjamanForm({
 
       {/* Keperluan */}
       <div>
-        <label className="font-semibold block mb-1">
-          Keperluan
-        </label>
+        <label className="font-semibold block mb-1">Keperluan</label>
+
         <textarea
           className="w-full border rounded-lg px-3 py-2"
           value={formData.keperluan}
           onChange={(e) =>
-            onChange({ ...formData, keperluan: e.target.value })
+            onChange({
+              ...formData,
+              keperluan: e.target.value,
+            })
           }
           required
         />
       </div>
 
+      {/* ⭐ STATUS — HANYA SAAT EDIT */}
+      {isEditing && (
+        <div>
+          <label className="font-semibold block mb-1">Status</label>
+
+          <select
+            className="w-full border rounded-lg px-3 py-2"
+            value={formData.status}
+            onChange={(e) =>
+              onChange({
+                ...formData,
+                status: e.target.value,
+              })
+            }
+          >
+            <option value="Menunggu">Menunggu</option>
+            <option value="Disetujui">Disetujui</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+        </div>
+      )}
+
+      {/* Submit */}
       <button
         type="submit"
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg"
+        disabled={submitting}
+        className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-bold py-2 rounded-lg transition"
       >
-        {isEditing ? "Simpan Perubahan" : "Kirim Pengajuan"}
+        {submitting ? "Menyimpan..." : "Simpan"}
       </button>
     </form>
   );
