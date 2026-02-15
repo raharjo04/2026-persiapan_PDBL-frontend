@@ -6,9 +6,15 @@ import { peminjamanApi } from "../../api/peminjamanApi";
 import Navbar from "../../components/layout/admin/Navbar";
 import PeminjamanTable from "../../components/peminjaman/PeminjamanTable";
 import PeminjamanDetailModal from "../../components/peminjaman/PeminjamanDetailModal";
+import PeminjamanFilterBar from "../../components/peminjaman/PeminjamanFilterBar";
 
 export default function DaftarPeminjamPage() {
   const [selectedDetail, setSelectedDetail] = useState<any | null>(null);
+
+  // 🔎 FILTER STATE
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [sortBy, setSortBy] = useState("terbaru");
 
   const navigate = useNavigate();
 
@@ -33,10 +39,46 @@ export default function DaftarPeminjamPage() {
     }
   };
 
-  // 🔥 FIXED EDIT FUNCTION
   const handleEdit = (p: any) => {
     navigate(`/admin/peminjaman/edit/${p.id || p.Id}`);
   };
+
+  // 🔥 FILTER + SEARCH + SORT
+  const processedData = listPeminjaman
+    .filter((item: any) => {
+      const text = search.toLowerCase();
+
+      const matchSearch =
+        item.namaPeminjam?.toLowerCase().includes(text) ||
+        item.ruangan?.toLowerCase().includes(text) ||
+        item.keperluan?.toLowerCase().includes(text);
+
+      const matchStatus =
+        statusFilter === "ALL" || item.status === statusFilter;
+
+      return matchSearch && matchStatus;
+    })
+    .sort((a: any, b: any) => {
+      switch (sortBy) {
+        case "terbaru":
+          return (
+            new Date(b.tanggalPinjam).getTime() -
+            new Date(a.tanggalPinjam).getTime()
+          );
+
+        case "terlama":
+          return (
+            new Date(a.tanggalPinjam).getTime() -
+            new Date(b.tanggalPinjam).getTime()
+          );
+
+        case "nama":
+          return a.namaPeminjam.localeCompare(b.namaPeminjam);
+
+        default:
+          return 0;
+      }
+    });
 
   if (loading)
     return (
@@ -51,6 +93,8 @@ export default function DaftarPeminjamPage() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6">
+
+        {/* HEADER */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
@@ -66,15 +110,27 @@ export default function DaftarPeminjamPage() {
               TOTAL DATA
             </span>
             <span className="text-2xl font-black text-blue-600">
-              {listPeminjaman.length}
+              {processedData.length}
             </span>
           </div>
         </div>
 
+        {/* 🔥 FILTER BAR */}
+        <PeminjamanFilterBar
+          search={search}
+          statusFilter={statusFilter}
+          sortBy={sortBy}
+          totalData={processedData.length}
+          onSearchChange={setSearch}
+          onStatusChange={setStatusFilter}
+          onSortChange={setSortBy}
+        />
+
+        {/* TABLE */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="overflow-x-auto">
             <PeminjamanTable
-              data={listPeminjaman}
+              data={processedData}
               onDetail={setSelectedDetail}
               onEdit={handleEdit}
               onDelete={handleDelete}
@@ -83,8 +139,10 @@ export default function DaftarPeminjamPage() {
             />
           </div>
         </div>
+
       </main>
 
+      {/* DETAIL MODAL */}
       <PeminjamanDetailModal
         data={selectedDetail}
         onClose={() => setSelectedDetail(null)}
