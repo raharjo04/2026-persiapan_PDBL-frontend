@@ -54,20 +54,6 @@ export default function Navbar() {
               List Peminjam
             </NavLink>
 
-            {/* Laporan (placeholder) */}
-            <NavLink
-              to="/admin/laporan"
-              className={({ isActive }) =>
-                `px-3 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-slate-500 hover:text-slate-700"
-                }`
-              }
-            >
-              Laporan
-            </NavLink>
-
             <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
             {/* User Button */}
@@ -132,13 +118,6 @@ export default function Navbar() {
               List Peminjam
             </NavLink>
 
-            <NavLink
-              to="/admin/laporan"
-              onClick={() => setIsOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50"
-            >
-              Laporan
-            </NavLink>
           </div>
         </div>
       )}
