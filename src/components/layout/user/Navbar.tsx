@@ -28,7 +28,7 @@ export default function Navbar() {
 
             {/* Peminjaman */}
             <NavLink
-              to="/admin/peminjaman"
+              to="/peminjaman"
               className={({ isActive }) =>
                 `px-3 py-2 text-sm font-medium transition ${
                   isActive
@@ -89,7 +89,7 @@ export default function Navbar() {
           <div className="px-2 pt-2 pb-3 space-y-1">
 
             <NavLink
-              to="/admin/peminjaman"
+              to="/peminjaman"
               onClick={() => setIsOpen(false)}
               className="block px-3 py-2 rounded-md text-base font-medium bg-blue-50 text-blue-600"
             >
