@@ -35,7 +35,7 @@ export default function PeminjamanPage() {
 
       resetForm();
 
-      // 🔥 Redirect ke daftar admin
+      // Redirect ke daftar admin
       navigate("/admin/daftar-peminjam");
     } catch {
       alert("Terjadi kesalahan saat menyimpan data.");

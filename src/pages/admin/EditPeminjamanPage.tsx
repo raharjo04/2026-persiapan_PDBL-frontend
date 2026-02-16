@@ -22,7 +22,7 @@ export default function EditPeminjamanPage() {
     startEdit,
   } = usePeminjaman();
 
-  // 🔥 LOAD DATA BY ID
+  // LOAD DATA BY ID
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -39,7 +39,7 @@ export default function EditPeminjamanPage() {
     loadData();
   }, [id]);
 
-  // 🔥 SUBMIT EDIT
+  // SUBMIT EDIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
