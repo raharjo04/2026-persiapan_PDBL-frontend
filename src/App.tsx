@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import LandingPage from "./pages/LandingPage";
+
 import AdminPeminjaman from "./pages/admin/PeminjamanPage";
 import UserPeminjaman from "./pages/user/PeminjamanPage";
 import DaftarPeminjamPage from "./pages/admin/DaftarPeminjamPage";
@@ -8,6 +11,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/*LANDING PAGE */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* USER */}
         <Route path="/peminjaman" element={<UserPeminjaman />} />
 
