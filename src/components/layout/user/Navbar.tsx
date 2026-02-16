@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-40">
@@ -39,7 +40,9 @@ export default function Navbar() {
             <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
             {/* User Button */}
-            <button className="bg-slate-100 p-2 rounded-full hover:bg-slate-200 transition">
+            <button
+              onClick={() => navigate("/")}
+              className="bg-slate-100 p-2 rounded-full hover:bg-red-100 hover:text-red-600 transition" title="Logout">
               👤
             </button>
           </div>
