@@ -34,8 +34,14 @@ export default function DaftarPeminjamPage() {
     try {
       await peminjamanApi.updateStatus(id, status);
       fetchData();
-    } catch {
-      alert("Gagal memperbarui status!");
+    } catch (err: any) {
+      const message = err.response?.data || "";
+      if (message.toLowerCase().includes("ruangan sudah dipinjam")) {
+        alert("Ruangan sudah dipinjam pada tanggal yang sama.");
+      }
+      else {
+        alert("Gagal memperbarui status!");
+      }
     }
   };
 
@@ -93,7 +99,6 @@ export default function DaftarPeminjamPage() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6">
-
         {/* HEADER */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -139,7 +144,6 @@ export default function DaftarPeminjamPage() {
             />
           </div>
         </div>
-
       </main>
 
       {/* DETAIL MODAL */}
